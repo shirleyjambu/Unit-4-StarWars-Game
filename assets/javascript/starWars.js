@@ -72,15 +72,8 @@ function getCharacterElement(charObj, type) {
   $imgDiv.html(strHeader + strImage + strFooter);
 
   return $imgDiv;
-}
 
-//Creates the list of all characters
-function setAllCharacters() {
-  $("#character").empty();
-  for (var i = 0; i < arrCharacters.length; i++) {
-    $("#character").append(getCharacterElement(arrCharacters[i], "C"));
-
-    // This did not work, have to check
+  // This did not work, have to check
     /*
     var $headerDiv = $("<div>");
     $headerDiv.addClass("flex-item");
@@ -96,8 +89,15 @@ function setAllCharacters() {
     $imgCharacter.attr("hp",character.hp);
     $imgCharacter.attr("attackPower",character.attackPower);
     $imgCharacter.attr("counterAttackPower",character.counterAttackPower);*/
-    // End of code not working
+    // End of code not working  
 
+}
+
+//Creates the list of all characters
+function setAllCharacters() {
+  $("#character").empty();
+  for (var i = 0; i < arrCharacters.length; i++) {
+    $("#character").append(getCharacterElement(arrCharacters[i], "C"));
   }
 }
 
@@ -120,6 +120,7 @@ function setYourCharacter(characterId) {
 function setYourDefender(characterId) {
   $("#defender").empty();
   $("#enemies").empty();
+  isEnemies = false;
   for (var i = 0; i < arrCharacters.length; i++) {
     if (arrCharacters[i].id === characterId) {
       $("#defender").append(getCharacterElement(arrCharacters[i], "D"));
@@ -128,6 +129,7 @@ function setYourDefender(characterId) {
     } else if (arrCharacters[i].id != objCharacterChosen.id) {
       if (arrCharacters[i].hp > 0) {
         $("#enemies").append(getCharacterElement(arrCharacters[i], "E"));
+        isEnemies = true;
       }
     }
   }
@@ -145,8 +147,11 @@ function setAttackMode() {
   $("#attack").append($attackBtn);
 }
 
-// Displays the reset button
+// Displays the reset button and removes attack mode
 function setResetButton() {
+  //Remove attack button as the attack ended
+  $("#attack").empty();
+
   var $resetBtn = $("<button>");
   $resetBtn.text("Restart Game");
   $resetBtn.attr("id", "reset-btn");
@@ -170,8 +175,6 @@ $(document).ready(function () {
   // On click of image in Enemies List
   $("#character").on("click", ".my-image", function () {
     var imageId = $(this).attr("id");
-    console.log(" Image clicked : " + imageId);
-
     if (!isCharacterChosen) {
       setYourCharacter(imageId);
     }
@@ -180,7 +183,7 @@ $(document).ready(function () {
   // On click of image in Enemies List 
   $("#enemies").on("click", ".my-image", function () {
     var imageId = $(this).attr("id");
-    console.log(" Image clicked : " + imageId);
+    //console.log("isCharacterChosen && !isDefenderChosen : " + isCharacterChosen +" , "+ !isDefenderChosen);
 
     if (isCharacterChosen && !isDefenderChosen) {
       setYourDefender(imageId);
@@ -191,29 +194,48 @@ $(document).ready(function () {
   // Attack button clicked
   $("#attack").on("click", "#attack-btn", function () {
     $("#message").empty();
+    //console.log("  isEnemies || isDefenderChosen : " + isEnemies + " , " + isDefenderChosen);
 
-    if (isEnemies) {
+    // Check if defender is chosen to continue, else print message
+    if (isDefenderChosen) {
+      // Increment attack power of chosen character
       charAttackPoints = charAttackPoints + objCharacterChosen.attackPower;
+
+      // Until both the character and defender have hp's continue attack
       if (objCharacterChosen.hp > 0 && objDefenderChosen.hp > 0) {
-        $("#message").append(" You have attacked " + objDefenderChosen.name + " by " + charAttackPoints + " damage and " + objDefenderChosen.name + " attacked you by " + objDefenderChosen.counterAttackPower + " damage.");
+        // send attack status messages
+        $("#message").append(" You have attacked " + objDefenderChosen.name + " by " + charAttackPoints + " damage. " + objDefenderChosen.name + " attacked you by " + objDefenderChosen.counterAttackPower + " damage.");
+
+        //decrement hp's
         objCharacterChosen.hp = objCharacterChosen.hp - objDefenderChosen.counterAttackPower;
         objDefenderChosen.hp = objDefenderChosen.hp - charAttackPoints;
 
+        //set the hp's
         $("#character").find("#hp").text(objCharacterChosen.hp);
         $("#defender").find("#hp").text(objDefenderChosen.hp);
-      } else if (objCharacterChosen.hp > 0) {
-        $("#message").append("You Win.");
+      } else if (objCharacterChosen.hp <= 0) {
+        // if character chosen has no hp left,send lost message and restart game
+        $("#message").append("You Lose! ");
+        setResetButton();
+      } else if (objDefenderChosen.hp <= 0) {
+        // if defender chosen has no hp left,send win message
+        $("#message").append("You Win! ");
         $("#defender").empty();
         isDefenderChosen = false;
-      } else {
-        $("#message").append("You Lose.");
-        setResetButton();
+        // if no enemies left,remove attack mode restart game
+        if (!isEnemies) {
+          setResetButton();
+        }
       }
     } else {
-      $("#message").append("Game Over");
-      setResetButton();
+      //if defender not chosen,but have enemies
+      if (isEnemies) {
+        $("#message").append("Please choose a Defender to attack! ");
+      } else {
+        $("#message").append("Game Over! ");
+        setResetButton();
+      }
     }
-
   });
 
   //Reset Game

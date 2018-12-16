@@ -1,0 +1,33 @@
+.my-image{
+  height: 75px;
+  width: 100px;
+}
+
+.my-char-div{
+  background-color: aliceblue;
+  border: 1px green solid;
+  padding: 2px;
+  text-align: center;
+  width:150px;
+}
+
+.my-enemy-div{
+  background-color: red;
+  border: 1px black solid;
+  padding: 2px;
+  text-align: center;
+  width:150px;
+}
+
+.my-def-div{
+  background-color: black;
+  border: 1px red solid;
+  padding: 2px;
+  text-align: center;
+  width:150px;
+  color: white;
+}
+
+.my-button{
+  color:red;
+}

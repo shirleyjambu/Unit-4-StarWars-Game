@@ -55,10 +55,6 @@ var arrCharacters = [characterOne, characterTwo, characterThree, characterFour];
 function getCharacterElement(charObj, type) {
   var character = charObj;
 
-  var strHeader = "<div class='flex-item'>" + character.name + "</div>";
-  var strImage = "<img class='img img-thumnail my-image' id='" + character.id + "' src='" + character.imgSrc + "'/>";
-  var strFooter = "<div class='flex-item' id='hp'>" + character.hp + "</div>";
-
   var $imgDiv = $("<div>");
   if (type == "D") {
     $imgDiv.addClass("flex-item my-def-div");
@@ -69,28 +65,28 @@ function getCharacterElement(charObj, type) {
     $imgDiv.addClass("flex-item my-char-div");
   }
 
-  $imgDiv.html(strHeader + strImage + strFooter);
+  var $headerDiv = $("<div>");
+  $headerDiv.addClass("flex-item");
+  $headerDiv.text(charObj.name);
+
+  var $footerDiv = $("<div>");
+  $footerDiv.addClass("flex-item");
+  $footerDiv.attr("id", 'hp');
+  $footerDiv.text(charObj.hp);
+
+  var $imgCharacter = $("<img>");
+  $imgCharacter.addClass("img img-thumnail my-image");
+  $imgCharacter.attr("src", charObj.imgSrc);
+  $imgCharacter.attr("id", charObj.id);
+  //$imgCharacter.attr("hp",charObj.hp);
+  //$imgCharacter.attr("attackPower",charObj.attackPower);
+  //$imgCharacter.attr("counterAttackPower",charObj.counterAttackPower);
+
+  $imgDiv.append($headerDiv);
+  $imgDiv.append($imgCharacter);
+  $imgDiv.append($footerDiv);
 
   return $imgDiv;
-
-  // This did not work, have to check
-    /*
-    var $headerDiv = $("<div>");
-    $headerDiv.addClass("flex-item");
-    $headerDiv.text(character.name);
-
-    var $footerDiv = $("<div>");
-    $footerDiv.addClass("flex-item");
-    $footerDiv.text(character.hp);
-
-    var $imgCharacter = $("<img>");
-    $imgCharacter.addClass("img img-thumnail my-image");
-    $imgCharacter.attr("src",character.imgSrc);
-    $imgCharacter.attr("hp",character.hp);
-    $imgCharacter.attr("attackPower",character.attackPower);
-    $imgCharacter.attr("counterAttackPower",character.counterAttackPower);*/
-    // End of code not working  
-
 }
 
 //Creates the list of all characters

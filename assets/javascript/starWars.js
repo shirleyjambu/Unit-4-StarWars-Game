@@ -161,7 +161,7 @@ function gameReset() {
   window.location.reload(true);
 }
 
-function zeroHealthPoints(charHp, defHp){
+function zeroHealthPoints(charHp, defHp) {
 
   if (defHp <= 0) {
     // if defender chosen has no hp left,send win message
@@ -176,7 +176,7 @@ function zeroHealthPoints(charHp, defHp){
     $("#message").text("You Lose! ");
     setResetButton();
   }
-  
+
 }
 //End of Functions
 
@@ -197,7 +197,7 @@ $(document).ready(function () {
   // On click of image in Enemies List , choose your defender, set attack mode
   $("#enemies").on("click", ".my-image", function () {
     var imageId = $(this).attr("id");
-    
+
     if (isCharacterChosen && !isDefenderChosen) {
       setYourDefender(imageId);
       setAttackMode();
@@ -207,20 +207,20 @@ $(document).ready(function () {
   /// On Attack mode
   $("#attack").on("click", "#attack-btn", function () {
     $("#message").empty();
-    
+
     // Check if defender chosen
-    if(!isDefenderChosen){
+    if (!isDefenderChosen) {
       $("#message").text("No Defender has been chosen to be attacked.");
       return false;
     }
 
     //console.log(" Character chosen : hp " + objCharacterChosen.name + " - "+ objCharacterChosen.hp );
     //console.log(" Defender chosen : hp " + objDefenderChosen.name + " - "+ objDefenderChosen.hp );
-    
+
 
     // Until both the character and defender have hp's continue attack
     if (objCharacterChosen.hp > 0 && objDefenderChosen.hp > 0) {
-      
+
       // Increment attack power of chosen character
       charAttackPoints = charAttackPoints + objCharacterChosen.attackPower;
 
@@ -235,16 +235,16 @@ $(document).ready(function () {
         //set the hp's
         $("#character").find("#hp").text(objCharacterChosen.hp);
         $("#defender").find("#hp").text(objDefenderChosen.hp);
-      }else{
-        zeroHealthPoints(objCharacterChosen.hp,objDefenderChosen.hp);  
+      } else {
+        zeroHealthPoints(objCharacterChosen.hp, objDefenderChosen.hp);
       }
-    }else{
-      zeroHealthPoints(objCharacterChosen.hp,objDefenderChosen.hp);
-    }    
+    } else {
+      zeroHealthPoints(objCharacterChosen.hp, objDefenderChosen.hp);
+    }
   });
   /// End of new Code
 
-  
+
   //Reset Game
   $("#message").on("click", "#reset-btn", function () {
     gameReset();

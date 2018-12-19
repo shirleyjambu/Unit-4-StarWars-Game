@@ -160,6 +160,24 @@ function setResetButton() {
 function gameReset() {
   window.location.reload(true);
 }
+
+function zeroHealthPoints(charHp, defHp){
+
+  if (defHp <= 0) {
+    // if defender chosen has no hp left,send win message
+    $("#message").text("You Win! ");
+    $("#defender").empty();
+    isDefenderChosen = false;
+    // if no enemies left,remove attack mode restart game
+    if (!isEnemies) {
+      setResetButton();
+    }
+  } else {
+    $("#message").text("You Lose! ");
+    setResetButton();
+  }
+  
+}
 //End of Functions
 
 // On Page load
@@ -168,7 +186,7 @@ $(document).ready(function () {
   //set all characters
   setAllCharacters();
 
-  // On click of image in Enemies List
+  // On click of image in Character List, choose your character
   $("#character").on("click", ".my-image", function () {
     var imageId = $(this).attr("id");
     if (!isCharacterChosen) {
@@ -176,64 +194,57 @@ $(document).ready(function () {
     }
   });
 
-  // On click of image in Enemies List 
+  // On click of image in Enemies List , choose your defender, set attack mode
   $("#enemies").on("click", ".my-image", function () {
     var imageId = $(this).attr("id");
-    //console.log("isCharacterChosen && !isDefenderChosen : " + isCharacterChosen +" , "+ !isDefenderChosen);
-
+    
     if (isCharacterChosen && !isDefenderChosen) {
       setYourDefender(imageId);
       setAttackMode();
     }
   });
 
-  // Attack button clicked
+  /// On Attack mode
   $("#attack").on("click", "#attack-btn", function () {
     $("#message").empty();
-    //console.log("  isEnemies || isDefenderChosen : " + isEnemies + " , " + isDefenderChosen);
+    
+    // Check if defender chosen
+    if(!isDefenderChosen){
+      $("#message").text("No Defender has been chosen to be attacked.");
+      return false;
+    }
 
-    // Check if defender is chosen to continue, else print message
-    if (isDefenderChosen) {
+    //console.log(" Character chosen : hp " + objCharacterChosen.name + " - "+ objCharacterChosen.hp );
+    //console.log(" Defender chosen : hp " + objDefenderChosen.name + " - "+ objDefenderChosen.hp );
+    
+
+    // Until both the character and defender have hp's continue attack
+    if (objCharacterChosen.hp > 0 && objDefenderChosen.hp > 0) {
+      
       // Increment attack power of chosen character
       charAttackPoints = charAttackPoints + objCharacterChosen.attackPower;
 
-      // Until both the character and defender have hp's continue attack
+      // send attack status messages
+      $("#message").append(" You have attacked " + objDefenderChosen.name + " by " + charAttackPoints + " damage. " + objDefenderChosen.name + " attacked you by " + objDefenderChosen.counterAttackPower + " damage.");
+
+      //decrement hp's
+      objCharacterChosen.hp = objCharacterChosen.hp - objDefenderChosen.counterAttackPower;
+      objDefenderChosen.hp = objDefenderChosen.hp - charAttackPoints;
+
       if (objCharacterChosen.hp > 0 && objDefenderChosen.hp > 0) {
-        // send attack status messages
-        $("#message").append(" You have attacked " + objDefenderChosen.name + " by " + charAttackPoints + " damage. " + objDefenderChosen.name + " attacked you by " + objDefenderChosen.counterAttackPower + " damage.");
-
-        //decrement hp's
-        objCharacterChosen.hp = objCharacterChosen.hp - objDefenderChosen.counterAttackPower;
-        objDefenderChosen.hp = objDefenderChosen.hp - charAttackPoints;
-
         //set the hp's
         $("#character").find("#hp").text(objCharacterChosen.hp);
         $("#defender").find("#hp").text(objDefenderChosen.hp);
-      } else if (objCharacterChosen.hp <= 0) {
-        // if character chosen has no hp left,send lost message and restart game
-        $("#message").append("You Lose! ");
-        setResetButton();
-      } else if (objDefenderChosen.hp <= 0) {
-        // if defender chosen has no hp left,send win message
-        $("#message").append("You Win! ");
-        $("#defender").empty();
-        isDefenderChosen = false;
-        // if no enemies left,remove attack mode restart game
-        if (!isEnemies) {
-          setResetButton();
-        }
+      }else{
+        zeroHealthPoints(objCharacterChosen.hp,objDefenderChosen.hp);  
       }
-    } else {
-      //if defender not chosen,but have enemies
-      if (isEnemies) {
-        $("#message").append("Please choose a Defender to attack! ");
-      } else {
-        $("#message").append("Game Over! ");
-        setResetButton();
-      }
-    }
+    }else{
+      zeroHealthPoints(objCharacterChosen.hp,objDefenderChosen.hp);
+    }    
   });
+  /// End of new Code
 
+  
   //Reset Game
   $("#message").on("click", "#reset-btn", function () {
     gameReset();
